@@ -3,6 +3,9 @@
 # TSRE5
 Train Sim game engine and MSTS / OR editors and tools. 
 
+Here is new Cmake + VSCode version:
+https://github.com/GokuMK/TSRE5vc
+
 See more:
 
 Route Editor: 
@@ -16,3 +19,4 @@ http://www.onrails.eu/
 
 Homepage, User Manual and build downloads:
 http://koniec.org/tsre5/
+

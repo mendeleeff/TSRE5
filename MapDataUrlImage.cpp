@@ -120,8 +120,14 @@ void MapDataUrlImage::load() {
     requestCout = 0;
     double isteps = 5;
     double jsteps = 6;
-    if(maxlat > 53.4)
+    if(maxlat > 63){
+        isteps = 8;
+        jsteps = 10;  
+    }
+    else if(maxlat > 53.4){
         isteps = 7;
+        jsteps = 8;
+    }
     double tzoom = zoom;
     if(tzoom == 18){
         isteps *= 2;

@@ -301,6 +301,18 @@ void Terrain::loadFFile(FileBuffer *data){
 
 Terrain::~Terrain() {
     long timeNow1 = QDateTime::currentMSecsSinceEpoch();
+    
+    //Release memory when move far from tile with map shown
+    if (this->loaded) {
+        int mapX, mapZ;
+        getLowCornerTileXY(mapX, mapZ);
+        if (MapWindow::IsMapSavedToDisk(mapX, mapZ)) {
+            int mapHash = mapX * 10000 + mapZ;
+            if (MapWindow::UnloadMapFromMemory(mapX, mapZ))
+                qDebug() << "Map unloaded due to terrain deleted:" << mapHash;
+        }
+    }
+    
     if (this->loaded) {
         for (int i = 0; i < 257; i++) {
             delete[] terrainData[i];
@@ -664,14 +676,24 @@ void Terrain::scaleTexY(int idx, float val){
 }
 
 void Terrain::setTileBlob(){
-    if(this->showBlob){
-        this->showBlob = false;
-        return;
-    } 
     int X, Y;
     getLowCornerTileXY(X, Y);
     int hash = (X*10000+Y);
     qDebug() << hash;
+    
+    if(this->showBlob){
+        this->showBlob = false;
+        //Release map from memory if already saved on disk
+        if(MapWindow::IsMapSavedToDisk(X, Y)){
+            MapWindow::UnloadMapFromMemory(X, Y);
+            qDebug() << "Map unloaded from memory:" << hash;
+        } else {
+            qDebug() << "Map not saved and remains in memory:" << hash;
+        }
+        
+        return;
+    } 
+    
     if(MapWindow::mapTileImages[hash] != NULL)
         this->showBlob = true;
     else {

@@ -221,6 +221,27 @@ void MapWindow::saveToDisk(){
     qDebug() << "#save time "<< ((float)(QDateTime::currentMSecsSinceEpoch() - timeNow))/1000.0;
 }
 
+//Check if there is a saved image
+bool MapWindow::IsMapSavedToDisk(int x, int z){
+    int hash = x*10000+z;
+    QString path = Game::root + "/routes/" + Game::route + "/terrain_maps/"+QString::number(hash)+".png";
+    QFile file(path);
+    return file.exists();
+}
+
+//Unload map from memory
+bool MapWindow::UnloadMapFromMemory(int x, int z){
+    int hash = x*10000+z;
+    std::unordered_map<int, QImage*>::iterator it = MapWindow::mapTileImages.find(hash);
+    if(it == MapWindow::mapTileImages.end())
+        return false;
+
+    if(it->second != NULL)
+        delete it->second;
+    MapWindow::mapTileImages.erase(it);
+    return true;
+}
+
 bool MapWindow::LoadMapFromDisk(int x, int z){
     int hash = x*10000+z;
     QString path = Game::root + "/routes/" + Game::route + "/terrain_maps/"+QString::number(hash)+".png";
@@ -241,6 +262,13 @@ bool MapWindow::LoadMapFromDisk(int x, int z){
                 img->setPixel(i, j, pix);
         }
     }
+    //Erase image if already appears
+    std::unordered_map<int, QImage*>::iterator iter = MapWindow::mapTileImages.find(hash);
+    if(iter != MapWindow::mapTileImages.end()){
+        delete iter->second;
+        MapWindow::mapTileImages.erase(iter);
+    }
+    
     MapWindow::mapTileImages[hash] = img;
     return true;
 }

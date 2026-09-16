@@ -39,6 +39,9 @@ public:
 
     int exec();
     
+    static bool UnloadMapFromMemory(int x, int z);
+    static bool IsMapSavedToDisk(int x, int z);
+    
 public slots:
     void load();
     void saveToDisk();
